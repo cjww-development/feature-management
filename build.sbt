@@ -15,9 +15,10 @@
  */
 
 import com.typesafe.config.ConfigFactory
-import scoverage.ScoverageKeys
 
 import scala.util.{Failure, Success, Try}
+import play.sbt.PlayImport.guice
+import scoverage.ScoverageKeys
 
 val appName = "feature-management"
 
@@ -34,8 +35,10 @@ lazy val scoverageSettings = Seq(
 )
 
 val dependencies: Seq[ModuleID] = Seq(
-  "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2"   % Test,
-  "org.mockito"             % "mockito-core"       % "2.18.3"  % Test
+  guice,
+  "com.typesafe.play" %  "play_2.12"         % "2.6.15",
+  "com.cjww-dev.libs" %  "http-verbs_2.12"   % "3.1.0",
+  "com.cjww-dev.libs" %% "testing-framework" % "3.2.0"   % Test
 )
 
 lazy val library = Project(appName, file("."))
@@ -53,5 +56,10 @@ lazy val library = Project(appName, file("."))
     bintrayOrganization                           :=  Some("cjww-development"),
     bintrayReleaseOnPublish    in ThisBuild       :=  true,
     bintrayRepository                             :=  "releases",
-    bintrayOmitLicense                            :=  true
+    bintrayOmitLicense                            :=  true,
+    javaOptions                in Test            :=  Seq(
+      "-Ddata-security.key=testKey",
+      "-Ddata-security.salt=testSalt",
+      "-Dmicroservices.external-services.admin-frontend.application-id=testAppId"
+    )
   )
