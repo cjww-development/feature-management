@@ -38,6 +38,7 @@ val dependencies: Seq[ModuleID] = Seq(
   guice,
   "com.typesafe.play" %  "play_2.12"         % "2.6.15",
   "com.cjww-dev.libs" %  "http-verbs_2.12"   % "3.1.0",
+  "com.cjww-dev.libs" %  "frontend-ui_2.12"  % "2.2.0",
   "com.cjww-dev.libs" %% "testing-framework" % "3.2.0"   % Test
 )
 
