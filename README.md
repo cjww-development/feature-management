@@ -72,6 +72,19 @@ Json response body:
 }
 ```
 
+Shuttering
+==========
+
+To be able to hit the shuttering routes add ```shuttering.routes``` to your routes file
+
+### POST /service-shuttering/true
+
+Hitting this route will shutter the service by setting the `shuttered` property to true
+
+### POST /service-shuttering/false
+
+Hitting this route will unshutter the service by setting the `shuttered` property to false
+
 License
 =======
 This code is open source software licensed under the Apache 2.0 License

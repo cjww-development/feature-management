@@ -1,0 +1,4 @@
+#Shuttering routes to shutter and unshutter a microservice
+
+PATCH       /service-shuttering/true            com.cjwwdev.shuttering.controllers.ShutteringController.shutter()
+PATCH       /service-shuttering/false           com.cjwwdev.shuttering.controllers.ShutteringController.unshutter()
