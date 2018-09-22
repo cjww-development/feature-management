@@ -28,7 +28,7 @@ import play.api.mvc._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait FrontendShutteringFilter extends Filter with Logging with RequestBuilder with FilterConfig {
+trait FrontendShutteringFilter extends Filter with Logging with FilterConfig {
   val langs: Langs
   implicit val messages: MessagesApi
 
@@ -37,7 +37,7 @@ trait FrontendShutteringFilter extends Filter with Logging with RequestBuilder w
 
   override def apply(f: RequestHeader => Future[Result])(rh: RequestHeader): Future[Result] = {
     implicit val lang: Lang           = langs.preferred(rh.acceptLanguages)
-    implicit val req: Request[String] = buildNewRequest[String](rh, "")
+    implicit val req: Request[String] = RequestBuilder.buildRequest[String](rh, "")
 
     val method    = rh.method == HttpVerbs.PATCH | rh.method == HttpVerbs.GET
     val path      = rh.path.contains(shutterRoute) | rh.path.contains(unshutterRoute) | rh.path.contains(getStateRoute)

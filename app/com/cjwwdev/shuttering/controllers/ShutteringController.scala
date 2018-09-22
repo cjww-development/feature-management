@@ -16,6 +16,7 @@
 
 package com.cjwwdev.shuttering.controllers
 
+import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.http.headers.HttpHeaders
 import com.cjwwdev.responses.ApiResponse
 import com.typesafe.config.ConfigFactory
@@ -23,7 +24,8 @@ import javax.inject.Inject
 import play.api.libs.json.JsString
 import play.api.mvc._
 
-class DefaultShutteringController @Inject()(val controllerComponents: ControllerComponents) extends ShutteringController
+class DefaultShutteringController @Inject()(val controllerComponents: ControllerComponents,
+                                            val config: ConfigurationLoader) extends ShutteringController
 
 trait ShutteringController extends BaseController with HttpHeaders with ApiResponse {
 

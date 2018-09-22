@@ -18,6 +18,7 @@ package com.cjwwdev.featuremanagement.controllers
 
 import java.util.UUID
 
+import com.cjwwdev.config.{ConfigurationLoader, DefaultConfigurationLoader}
 import com.cjwwdev.featuremanagement.models.{Feature, Features}
 import com.cjwwdev.featuremanagement.services.FeatureService
 import com.cjwwdev.http.headers.HeaderPackage
@@ -25,14 +26,17 @@ import com.cjwwdev.testing.unit.UnitTestSpec
 import com.cjwwdev.implicits.ImplicitDataSecurity._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.ControllerComponents
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubControllerComponents
 
-class FeatureControllerSpec extends UnitTestSpec {
+class FeatureControllerSpec extends UnitTestSpec with GuiceOneAppPerSuite {
 
   val mockFeatureService = mock[FeatureService]
+
+  val configuration = app.injector.instanceOf[DefaultConfigurationLoader]
 
   object TestFeatures extends Features {
     val testFeature1 = "testFeature1"
@@ -45,6 +49,7 @@ class FeatureControllerSpec extends UnitTestSpec {
   }
 
   val testController = new FeatureController {
+    override protected val config: ConfigurationLoader                = configuration
     override val features: Features                                   = TestFeatures
     override val featureService: FeatureService                       = mockFeatureService
     override protected def controllerComponents: ControllerComponents = stubControllerComponents()
@@ -52,7 +57,7 @@ class FeatureControllerSpec extends UnitTestSpec {
 
   lazy val request = FakeRequest()
     .withHeaders(
-      "cjww-headers" -> HeaderPackage("testAppId", s"session-${UUID.randomUUID()}").encryptType
+      "cjww-headers" -> HeaderPackage("testAppId", Some(s"session-${UUID.randomUUID()}")).encrypt
     )
 
   "getState" should {
@@ -81,7 +86,7 @@ class FeatureControllerSpec extends UnitTestSpec {
 
     "return a Forbidden" in {
       val request = FakeRequest().withHeaders(
-        "cjww-headers" -> HeaderPackage("invalid", s"session-${UUID.randomUUID()}").encryptType
+        "cjww-headers" -> HeaderPackage("invalid", Some(s"session-${UUID.randomUUID()}")).encrypt
       )
 
       assertFutureResult(testController.getState("testFeatureName")(request)) {
@@ -126,7 +131,7 @@ class FeatureControllerSpec extends UnitTestSpec {
     "return a Forbidden" in {
       val request = FakeRequest()
         .withHeaders(
-          "cjww-headers" -> HeaderPackage("invalid", s"session-${UUID.randomUUID()}").encryptType
+          "cjww-headers" -> HeaderPackage("invalid", Some(s"session-${UUID.randomUUID()}")).encrypt
         )
 
       assertFutureResult(testController.getState("testFeatureName")(request)) {
@@ -176,7 +181,7 @@ class FeatureControllerSpec extends UnitTestSpec {
     "return a Forbidden" in {
       val request = FakeRequest()
         .withHeaders(
-          "cjww-headers" -> HeaderPackage("invalid", s"session-${UUID.randomUUID()}").encryptType
+          "cjww-headers" -> HeaderPackage("invalid", Some(s"session-${UUID.randomUUID()}")).encrypt
         )
 
       assertFutureResult(testController.setState("testFeatureName", "false")(request)) {

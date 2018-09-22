@@ -16,23 +16,23 @@
 
 package com.cjwwdev.featuremanagement.controllers
 
+import com.cjwwdev.config.ConfigurationLoader
 import com.cjwwdev.featuremanagement.models.Features
 import com.cjwwdev.featuremanagement.services.FeatureService
-import javax.inject.Inject
 import com.cjwwdev.http.headers.HttpHeaders
 import com.typesafe.config.ConfigFactory
-import play.api.Configuration
+import javax.inject.Inject
 import play.api.libs.json.Json
 import play.api.mvc._
 
 import scala.util.{Failure, Success, Try}
 
 class DefaultFeatureController @Inject()(val controllerComponents: ControllerComponents,
-                                         val configuration: Configuration,
+                                         val config: ConfigurationLoader,
                                          val featureService: FeatureService) extends FeatureController {
   override val features: Features = getClass
     .getClassLoader
-    .loadClass(configuration.get[String]("features.definition"))
+    .loadClass(config.get[String]("features.definition"))
     .asInstanceOf[Features]
 }
 

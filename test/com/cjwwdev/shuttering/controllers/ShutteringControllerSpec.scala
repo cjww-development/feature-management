@@ -18,21 +18,26 @@ package com.cjwwdev.shuttering.controllers
 
 import java.util.UUID
 
+import com.cjwwdev.config.{ConfigurationLoader, DefaultConfigurationLoader}
 import com.cjwwdev.http.headers.HeaderPackage
 import com.cjwwdev.implicits.ImplicitDataSecurity._
 import com.cjwwdev.testing.unit.UnitTestSpec
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.mvc.ControllerComponents
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
-class ShutteringControllerSpec extends UnitTestSpec {
+class ShutteringControllerSpec extends UnitTestSpec with GuiceOneAppPerSuite {
+
+  val configuration = app.injector.instanceOf[DefaultConfigurationLoader]
 
   val testController = new ShutteringController {
+    override protected val config: ConfigurationLoader = configuration
     override protected def controllerComponents: ControllerComponents = stubControllerComponents()
   }
 
   lazy val request = FakeRequest().withHeaders(
-    "cjww-headers" -> HeaderPackage("testAppId", s"session-${UUID.randomUUID()}").encryptType
+    "cjww-headers" -> HeaderPackage("testAppId", Some(s"session-${UUID.randomUUID()}")).encrypt
   )
 
   "shutter" should {
@@ -45,7 +50,7 @@ class ShutteringControllerSpec extends UnitTestSpec {
 
     "return a Forbidden" in {
       val request = FakeRequest().withHeaders(
-        "cjww-headers" -> HeaderPackage("testAppId1", s"session-${UUID.randomUUID()}").encryptType
+        "cjww-headers" -> HeaderPackage("testAppId1", Some(s"session-${UUID.randomUUID()}")).encrypt
       )
 
       assertFutureResult(testController.shutter()(request)) {
@@ -70,7 +75,7 @@ class ShutteringControllerSpec extends UnitTestSpec {
 
     "return a Forbidden" in {
       val request = FakeRequest().withHeaders(
-        "cjww-headers" -> HeaderPackage("testAppId1", s"session-${UUID.randomUUID()}").encryptType
+        "cjww-headers" -> HeaderPackage("testAppId1", Some(s"session-${UUID.randomUUID()}")).encrypt
       )
 
       assertFutureResult(testController.unshutter()(request)) {
@@ -95,7 +100,7 @@ class ShutteringControllerSpec extends UnitTestSpec {
 
     "return a Forbidden" in {
       val request = FakeRequest().withHeaders(
-        "cjww-headers" -> HeaderPackage("testAppId1", s"session-${UUID.randomUUID()}").encryptType
+        "cjww-headers" -> HeaderPackage("testAppId1", Some(s"session-${UUID.randomUUID()}")).encrypt
       )
 
       assertFutureResult(testController.getShutterState()(request)) {

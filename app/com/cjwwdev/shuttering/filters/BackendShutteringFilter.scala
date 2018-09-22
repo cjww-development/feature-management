@@ -30,10 +30,10 @@ import play.api.mvc.Results.ServiceUnavailable
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class BackendShutteringFilter @Inject()(implicit val mat: Materializer) extends Filter with Logging with RequestBuilder with FilterConfig with ApiResponse {
+class BackendShutteringFilter @Inject()(implicit val mat: Materializer) extends Filter with Logging with FilterConfig with ApiResponse {
 
   override def apply(f: RequestHeader => Future[Result])(rh: RequestHeader): Future[Result] = {
-    implicit val req: Request[String] = buildNewRequest[String](rh, "")
+    implicit val req: Request[String] = RequestBuilder.buildRequest[String](rh, "")
     val method    = rh.method == HttpVerbs.PATCH | rh.method == HttpVerbs.GET
     val path      = rh.path.contains(shutterRoute) | rh.path.contains(unshutterRoute) | rh.path.contains(getStateRoute)
     val shuttered = System.getProperty("shuttered", "false").toBoolean
