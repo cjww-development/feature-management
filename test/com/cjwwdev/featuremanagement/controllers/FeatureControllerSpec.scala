@@ -60,28 +60,33 @@ class FeatureControllerSpec extends UnitTestSpec {
       when(mockFeatureService.getState(ArgumentMatchers.any()))
         .thenReturn(Feature("testFeatureName", state = true))
 
-      val result = testController.getState("testFeatureName")(request)
-      status(result)        mustBe OK
-      contentAsJson(result) mustBe Json.parse(
-        """
-          |{
-          |   "feature" : "testFeatureName",
-          |   "state" : true
-          |}
-        """.stripMargin
-      )
+      assertFutureResult(testController.getState("testFeatureName")(request)) { res =>
+        status(res) mustBe OK
+        contentAsJson(res) mustBe Json.parse(
+          """
+            |{
+            |   "feature" : "testFeatureName",
+            |   "state" : true
+            |}
+          """.stripMargin
+        )
+      }
     }
 
     "return a NotFound" in {
-      val result = testController.getState("testFeatureName")(FakeRequest())
-      status(result) mustBe NOT_FOUND
+      assertFutureResult(testController.getState("testFeatureName")(FakeRequest())) {
+        status(_) mustBe NOT_FOUND
+      }
     }
 
     "return a Forbidden" in {
-      val result = testController.getState("testFeatureName")(FakeRequest()
-        .withHeaders("cjww-headers" -> HeaderPackage("invalid", s"session-${UUID.randomUUID()}").encryptType))
+      val request = FakeRequest().withHeaders(
+        "cjww-headers" -> HeaderPackage("invalid", s"session-${UUID.randomUUID()}").encryptType
+      )
 
-      status(result) mustBe FORBIDDEN
+      assertFutureResult(testController.getState("testFeatureName")(request)) {
+        status(_) mustBe FORBIDDEN
+      }
     }
   }
 
@@ -93,34 +98,40 @@ class FeatureControllerSpec extends UnitTestSpec {
           Feature("testFeature2", state = false)
         ))
 
-      val result = testController.getAllStates()(request)
-      status(result)        mustBe OK
-      contentAsJson(result) mustBe Json.parse(
-        """
-          |[
-          |   {
-          |       "feature" : "testFeature1",
-          |       "state" : true
-          |   },
-          |   {
-          |       "feature" : "testFeature2",
-          |       "state" : false
-          |   }
-          |]
-        """.stripMargin
-      )
+      assertFutureResult(testController.getAllStates()(request)) { res =>
+        status(res) mustBe OK
+        contentAsJson(res) mustBe Json.parse(
+          """
+            |[
+            |   {
+            |       "feature" : "testFeature1",
+            |       "state" : true
+            |   },
+            |   {
+            |       "feature" : "testFeature2",
+            |       "state" : false
+            |   }
+            |]
+          """.stripMargin
+        )
+      }
     }
 
     "return a NotFound" in {
-      val result = testController.getAllStates()(FakeRequest())
-      status(result) mustBe NOT_FOUND
+      assertFutureResult(testController.getAllStates()(FakeRequest())) {
+        status(_) mustBe NOT_FOUND
+      }
     }
 
     "return a Forbidden" in {
-      val result = testController.getState("testFeatureName")(FakeRequest()
-        .withHeaders("cjww-headers" -> HeaderPackage("invalid", s"session-${UUID.randomUUID()}").encryptType))
+      val request = FakeRequest()
+        .withHeaders(
+          "cjww-headers" -> HeaderPackage("invalid", s"session-${UUID.randomUUID()}").encryptType
+        )
 
-      status(result) mustBe FORBIDDEN
+      assertFutureResult(testController.getState("testFeatureName")(request)) {
+        status(_) mustBe FORBIDDEN
+      }
     }
   }
 
@@ -129,40 +140,48 @@ class FeatureControllerSpec extends UnitTestSpec {
       when(mockFeatureService.setState(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(true)
 
-      val result = testController.setState("testFeature", "true")(request)
-      status(result) mustBe OK
-      contentAsJson(result) mustBe Json.parse(
-        """
-          |{
-          |   "testFeature" : "true"
-          |}
-        """.stripMargin
-      )
+      assertFutureResult(testController.setState("testFeature", "true")(request)) { res =>
+        status(res)        mustBe OK
+        contentAsJson(res) mustBe Json.parse(
+          """
+            |{
+            |   "testFeature" : "true"
+            |}
+          """.stripMargin
+        )
+      }
     }
 
     "return a Bad request" in {
-      val result = testController.setState("testFeature", "invalid")(request)
-      status(result) mustBe BAD_REQUEST
+      assertFutureResult(testController.setState("testFeature", "invalid")(request)) {
+        status(_) mustBe BAD_REQUEST
+      }
     }
 
     "return an Internal server error" in {
       when(mockFeatureService.setState(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(false)
 
-      val result = testController.setState("testFeature", "true")(request)
-      status(result) mustBe INTERNAL_SERVER_ERROR
+      assertFutureResult(testController.setState("testFeature", "true")(request)) {
+        status(_) mustBe INTERNAL_SERVER_ERROR
+      }
     }
 
     "return a NotFound" in {
-      val result = testController.setState("testFeature", "true")(FakeRequest())
-      status(result) mustBe NOT_FOUND
+      assertFutureResult(testController.setState("testFeature", "true")(FakeRequest())) {
+        status(_) mustBe NOT_FOUND
+      }
     }
 
     "return a Forbidden" in {
-      val result = testController.setState("testFeatureName", "false")(FakeRequest()
-        .withHeaders("cjww-headers" -> HeaderPackage("invalid", s"session-${UUID.randomUUID()}").encryptType))
+      val request = FakeRequest()
+        .withHeaders(
+          "cjww-headers" -> HeaderPackage("invalid", s"session-${UUID.randomUUID()}").encryptType
+        )
 
-      status(result) mustBe FORBIDDEN
+      assertFutureResult(testController.setState("testFeatureName", "false")(request)) {
+        status(_) mustBe FORBIDDEN
+      }
     }
   }
 }

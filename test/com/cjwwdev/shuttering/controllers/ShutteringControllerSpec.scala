@@ -37,21 +37,76 @@ class ShutteringControllerSpec extends UnitTestSpec {
 
   "shutter" should {
     "return an Ok and have set shuttered to true" in {
-      val result = testController.shutter()(request)
+      assertFutureResult(testController.shutter()(request)) { res =>
+        status(res)                     mustBe NO_CONTENT
+        System.getProperty("shuttered") mustBe "true"
+      }
+    }
 
-      status(result) mustBe OK
+    "return a Forbidden" in {
+      val request = FakeRequest().withHeaders(
+        "cjww-headers" -> HeaderPackage("testAppId1", s"session-${UUID.randomUUID()}").encryptType
+      )
 
-      System.getProperty("shuttered") mustBe "true"
+      assertFutureResult(testController.shutter()(request)) {
+        status(_) mustBe FORBIDDEN
+      }
+    }
+
+    "return a NOT FOUND" in {
+      assertFutureResult(testController.shutter()(FakeRequest())) {
+        status(_) mustBe NOT_FOUND
+      }
     }
   }
 
   "unshutter" should {
     "return an Ok and have set shuttered to false" in {
-      val result = testController.unshutter()(request)
+      assertFutureResult(testController.unshutter()(request)) { res =>
+        status(res)                     mustBe NO_CONTENT
+        System.getProperty("shuttered") mustBe "false"
+      }
+    }
 
-      status(result) mustBe OK
+    "return a Forbidden" in {
+      val request = FakeRequest().withHeaders(
+        "cjww-headers" -> HeaderPackage("testAppId1", s"session-${UUID.randomUUID()}").encryptType
+      )
 
-      System.getProperty("shuttered") mustBe "false"
+      assertFutureResult(testController.unshutter()(request)) {
+        status(_) mustBe FORBIDDEN
+      }
+    }
+
+    "return a NOT FOUND" in {
+      assertFutureResult(testController.unshutter()(FakeRequest())) {
+        status(_) mustBe NOT_FOUND
+      }
+    }
+  }
+
+  "getShutterState" should {
+    "return an ok with the current state in the body" in {
+      assertFutureResult(testController.getShutterState()(request)) { res =>
+        status(res)                             mustBe OK
+        contentAsJson(res).\("body").as[String] mustBe "false"
+      }
+    }
+
+    "return a Forbidden" in {
+      val request = FakeRequest().withHeaders(
+        "cjww-headers" -> HeaderPackage("testAppId1", s"session-${UUID.randomUUID()}").encryptType
+      )
+
+      assertFutureResult(testController.getShutterState()(request)) {
+        status(_) mustBe FORBIDDEN
+      }
+    }
+
+    "return a NOT FOUND" in {
+      assertFutureResult(testController.getShutterState()(FakeRequest())) {
+        status(_) mustBe NOT_FOUND
+      }
     }
   }
 }
