@@ -28,24 +28,25 @@ import play.api.mvc._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait ShutteringFilter extends Filter with Logging with RequestBuilder {
+trait FrontendShutteringFilter extends Filter with Logging with RequestBuilder with FilterConfig {
   val langs: Langs
   implicit val messages: MessagesApi
 
   implicit val pageLinks: Seq[NavBarLinkBuilder]
   implicit val navBarRoutes: Map[String, Call]
 
-  private val shutterRoute   = "/service-shuttering/true"
-  private val unshutterRoute = "/service-shuttering/false"
-
   override def apply(f: RequestHeader => Future[Result])(rh: RequestHeader): Future[Result] = {
     implicit val lang: Lang           = langs.preferred(rh.acceptLanguages)
     implicit val req: Request[String] = buildNewRequest[String](rh, "")
 
-    if(rh.method == HttpVerbs.PATCH & (rh.path.contains(shutterRoute) | rh.path.contains(unshutterRoute))) {
-      f(rh)
-    } else {
-      if(System.getProperty("shuttered").toBoolean) {
+    val method    = rh.method == HttpVerbs.PATCH | rh.method == HttpVerbs.GET
+    val path      = rh.path.contains(shutterRoute) | rh.path.contains(unshutterRoute) | rh.path.contains(getStateRoute)
+    val shuttered = System.getProperty("shuttered", "false").toBoolean
+
+    method -> path match {
+      case (true, true) => f(rh)
+      case (_,_)        => if(shuttered) {
+        logger.warn("Service is shuttered")
         Future(ServiceUnavailable(MaintenanceView()))
       } else {
         f(rh)

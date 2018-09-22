@@ -17,28 +17,36 @@
 package com.cjwwdev.shuttering.controllers
 
 import com.cjwwdev.http.headers.HttpHeaders
+import com.cjwwdev.responses.ApiResponse
 import com.typesafe.config.ConfigFactory
 import javax.inject.Inject
+import play.api.libs.json.JsString
 import play.api.mvc._
 
 class DefaultShutteringController @Inject()(val controllerComponents: ControllerComponents) extends ShutteringController
 
-trait ShutteringController extends BaseController with HttpHeaders {
+trait ShutteringController extends BaseController with HttpHeaders with ApiResponse {
 
-  def shutter(): Action[AnyContent] = Action { implicit request =>
+  def shutter(): Action[AnyContent] = validateAdminCall { implicit request =>
     System.setProperty("shuttered", "true")
-    Ok
+    NoContent
   }
 
-  def unshutter(): Action[AnyContent] = Action { implicit request =>
+  def unshutter(): Action[AnyContent] = validateAdminCall { implicit request =>
     System.setProperty("shuttered", "false")
-    Ok
+    NoContent
   }
 
-  private def validateAdminCall(f: => Result): Action[AnyContent] = Action { implicit request =>
+  def getShutterState(): Action[AnyContent] = validateAdminCall { implicit request =>
+    withJsonResponseBody(OK, JsString(System.getProperty("shuttered", "false"))) { json =>
+      Ok(json)
+    }
+  }
+
+  private def validateAdminCall(f: Request[_] => Result): Action[AnyContent] = Action { implicit request =>
     constructHeaderPackageFromRequestHeaders.fold[Result](NotFound) { headers =>
       if(ConfigFactory.load.getString("microservices.external-services.admin-frontend.application-id") == headers.appId) {
-        f
+        f(request)
       } else {
         Forbidden
       }

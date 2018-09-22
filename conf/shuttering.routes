@@ -2,3 +2,4 @@
 
 PATCH       /service-shuttering/true            com.cjwwdev.shuttering.controllers.ShutteringController.shutter()
 PATCH       /service-shuttering/false           com.cjwwdev.shuttering.controllers.ShutteringController.unshutter()
+GET         /service-shuttering/state           com.cjwwdev.shuttering.controllers.ShutteringController.getShutterState()
