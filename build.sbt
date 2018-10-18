@@ -37,7 +37,7 @@ lazy val scoverageSettings = Seq(
 val dependencies: Seq[ModuleID] = Seq(
   guice,
   "com.typesafe.play" %  "play_2.12"         % "2.6.19",
-  "com.cjww-dev.libs" %  "http-verbs_2.12"   % "3.2.1",
+  "com.cjww-dev.libs" %  "http-verbs_2.12"   % "3.3.0",
   "com.cjww-dev.libs" %  "frontend-ui_2.12"  % "2.8.1",
   "com.cjww-dev.libs" %% "testing-framework" % "3.2.0"   % Test
 )
@@ -47,7 +47,7 @@ lazy val library = Project(appName, file("."))
   .settings(scoverageSettings)
   .settings(
     version                                       :=  btVersion,
-    scalaVersion                                  :=  "2.12.6",
+    scalaVersion                                  :=  "2.12.7",
     organization                                  :=  "com.cjww-dev.libs",
     resolvers                                     ++= Seq(
       "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",

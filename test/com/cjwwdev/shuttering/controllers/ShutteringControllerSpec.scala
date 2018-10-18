@@ -18,21 +18,17 @@ package com.cjwwdev.shuttering.controllers
 
 import java.util.UUID
 
-import com.cjwwdev.config.{ConfigurationLoader, DefaultConfigurationLoader}
 import com.cjwwdev.http.headers.HeaderPackage
 import com.cjwwdev.implicits.ImplicitDataSecurity._
 import com.cjwwdev.testing.unit.UnitTestSpec
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.mvc.ControllerComponents
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
-class ShutteringControllerSpec extends UnitTestSpec with GuiceOneAppPerSuite {
-
-  val configuration = app.injector.instanceOf[DefaultConfigurationLoader]
+class ShutteringControllerSpec extends UnitTestSpec {
 
   val testController = new ShutteringController {
-    override protected val config: ConfigurationLoader = configuration
+    override val appId: String                                        = "testAppId"
     override protected def controllerComponents: ControllerComponents = stubControllerComponents()
   }
 

@@ -18,25 +18,21 @@ package com.cjwwdev.featuremanagement.controllers
 
 import java.util.UUID
 
-import com.cjwwdev.config.{ConfigurationLoader, DefaultConfigurationLoader}
 import com.cjwwdev.featuremanagement.models.{Feature, Features}
 import com.cjwwdev.featuremanagement.services.FeatureService
 import com.cjwwdev.http.headers.HeaderPackage
-import com.cjwwdev.testing.unit.UnitTestSpec
 import com.cjwwdev.implicits.ImplicitDataSecurity._
+import com.cjwwdev.testing.unit.UnitTestSpec
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.ControllerComponents
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubControllerComponents
 
-class FeatureControllerSpec extends UnitTestSpec with GuiceOneAppPerSuite {
+class FeatureControllerSpec extends UnitTestSpec {
 
   val mockFeatureService = mock[FeatureService]
-
-  val configuration = app.injector.instanceOf[DefaultConfigurationLoader]
 
   object TestFeatures extends Features {
     val testFeature1 = "testFeature1"
@@ -49,7 +45,7 @@ class FeatureControllerSpec extends UnitTestSpec with GuiceOneAppPerSuite {
   }
 
   val testController = new FeatureController {
-    override protected val config: ConfigurationLoader                = configuration
+    override val appId: String                                        = "testAppId"
     override val features: Features                                   = TestFeatures
     override val featureService: FeatureService                       = mockFeatureService
     override protected def controllerComponents: ControllerComponents = stubControllerComponents()
