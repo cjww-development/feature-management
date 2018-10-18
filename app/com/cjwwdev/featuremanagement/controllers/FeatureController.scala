@@ -34,6 +34,8 @@ class DefaultFeatureController @Inject()(val controllerComponents: ControllerCom
     .getClassLoader
     .loadClass(config.get[String]("features.definition"))
     .asInstanceOf[Features]
+
+  override val appId: String = config.getServiceId(config.get[String]("appName"))
 }
 
 trait FeatureController extends BaseController with HttpHeaders {

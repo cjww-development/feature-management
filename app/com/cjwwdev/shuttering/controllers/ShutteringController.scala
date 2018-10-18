@@ -25,7 +25,9 @@ import play.api.libs.json.JsString
 import play.api.mvc._
 
 class DefaultShutteringController @Inject()(val controllerComponents: ControllerComponents,
-                                            val config: ConfigurationLoader) extends ShutteringController
+                                            val config: ConfigurationLoader) extends ShutteringController {
+  override val appId: String = config.getServiceId(config.get[String]("appName"))
+}
 
 trait ShutteringController extends BaseController with HttpHeaders with ApiResponse {
 
