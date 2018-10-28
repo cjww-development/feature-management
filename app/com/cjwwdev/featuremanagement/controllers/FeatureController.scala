@@ -30,9 +30,11 @@ import scala.util.{Failure, Success, Try}
 class DefaultFeatureController @Inject()(val controllerComponents: ControllerComponents,
                                          val config: ConfigurationLoader,
                                          val featureService: FeatureService) extends FeatureController {
+
   override val features: Features = getClass
     .getClassLoader
     .loadClass(config.get[String]("features.definition"))
+    .newInstance
     .asInstanceOf[Features]
 
   override val appId: String = config.getServiceId(config.get[String]("appName"))
