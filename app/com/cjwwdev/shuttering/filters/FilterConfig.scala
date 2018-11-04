@@ -20,4 +20,5 @@ trait FilterConfig {
   protected val shutterRoute   = "/service-shuttering/true"
   protected val unshutterRoute = "/service-shuttering/false"
   protected val getStateRoute  = "/service-shuttering/state"
+  protected val assetsRoutes   = "/assets/"
 }
