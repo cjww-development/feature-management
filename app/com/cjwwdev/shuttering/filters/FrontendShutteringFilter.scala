@@ -32,8 +32,8 @@ trait FrontendShutteringFilter extends Filter with Logging with FilterConfig {
   val langs: Langs
   implicit val messages: MessagesApi
 
-  implicit val pageLinks: Seq[NavBarLinkBuilder]
-  implicit val navBarRoutes: Map[String, Call]
+  implicit def pageLinks(implicit rh: RequestHeader): Seq[NavBarLinkBuilder]
+  implicit def navBarRoutes(implicit rh: RequestHeader): Map[String, Call]
 
   override def apply(f: RequestHeader => Future[Result])(rh: RequestHeader): Future[Result] = {
     implicit val lang: Lang           = langs.preferred(rh.acceptLanguages)
