@@ -16,9 +16,26 @@
 
 package com.cjwwdev.shuttering.filters
 
+import play.api.http.HttpVerbs
+import play.api.mvc.RequestHeader
+
 trait FilterConfig {
-  protected val shutterRoute   = "/service-shuttering/true"
-  protected val unshutterRoute = "/service-shuttering/false"
-  protected val getStateRoute  = "/service-shuttering/state"
-  protected val assetsRoutes   = "/assets/"
+  protected val shutterOnOffRoute       = """(.*)\/service-shuttering\/(true|false)"""
+  protected val getStateRoute           = """(.*)\/service-shuttering\/state"""
+
+  protected val getSpecificFeatureRoute = """(.*)\/feature\/(.*)\/state"""
+  protected val getFeaturesRoute        = "/features"
+  protected val updateFeatureRoute      = """(.*)\/feature\/(.*)\/state\/(true|false)"""
+
+  protected val assetsRoutes            = "/assets/"
+
+  def requestPathMatches(implicit rh: RequestHeader): Boolean = {
+    rh.path.matches(shutterOnOffRoute) | rh.path.matches(getStateRoute) |
+      rh.path.matches(getSpecificFeatureRoute) | rh.path.contains(getFeaturesRoute) |
+        rh.path.matches(updateFeatureRoute) | rh.path.contains(assetsRoutes)
+  }
+
+  def requestMethodMatches(implicit rh: RequestHeader): Boolean = {
+    rh.method.eq(HttpVerbs.GET) | rh.method.eq(HttpVerbs.POST) | rh.method.eq(HttpVerbs.PATCH)
+  }
 }

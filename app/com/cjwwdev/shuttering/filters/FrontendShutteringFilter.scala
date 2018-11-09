@@ -39,11 +39,9 @@ trait FrontendShutteringFilter extends Filter with Logging with FilterConfig {
     implicit val lang: Lang           = langs.preferred(rh.acceptLanguages)
     implicit val req: Request[String] = RequestBuilder.buildRequest[String](rh, "")
 
-    val method    = rh.method == HttpVerbs.PATCH | rh.method == HttpVerbs.GET
-    val path      = rh.path.contains(shutterRoute) | rh.path.contains(unshutterRoute) | rh.path.contains(getStateRoute) | rh.path.contains(assetsRoutes)
     val shuttered = System.getProperty("shuttered", "false").toBoolean
 
-    method -> path match {
+    requestMethodMatches -> requestPathMatches match {
       case (true, true) => f(rh)
       case (_,_)        => if(shuttered) {
         logger.warn("Service is shuttered")

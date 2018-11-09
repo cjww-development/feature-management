@@ -61,6 +61,6 @@ lazy val library = Project(appName, file("."))
     javaOptions                in Test            :=  Seq(
       "-Ddata-security.key=testKey",
       "-Ddata-security.salt=testSalt",
-      "-Dmicroservices.external-services.admin-frontend.application-id=testAppId"
+      "-Dmicroservice.external-services.admin-frontend.application-id=testAppId"
     )
   )

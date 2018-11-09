@@ -34,11 +34,10 @@ class BackendShutteringFilter @Inject()(implicit val mat: Materializer) extends 
 
   override def apply(f: RequestHeader => Future[Result])(rh: RequestHeader): Future[Result] = {
     implicit val req: Request[String] = RequestBuilder.buildRequest[String](rh, "")
-    val method    = rh.method == HttpVerbs.PATCH | rh.method == HttpVerbs.GET
-    val path      = rh.path.contains(shutterRoute) | rh.path.contains(unshutterRoute) | rh.path.contains(getStateRoute)
+
     val shuttered = System.getProperty("shuttered", "false").toBoolean
 
-    method -> path match {
+    requestMethodMatches -> requestPathMatches match {
       case (true, true) => f(rh)
       case (_,_)        => if(shuttered) {
         logger.warn("Service is shuttered")

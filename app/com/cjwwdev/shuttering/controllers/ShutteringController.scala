@@ -49,7 +49,7 @@ trait ShutteringController extends BaseController with HttpHeaders with ApiRespo
 
   private def validateAdminCall(f: Request[_] => Result): Action[AnyContent] = Action { implicit request =>
     constructHeaderPackageFromRequestHeaders.fold[Result](NotFound) { headers =>
-      if(ConfigFactory.load.getString("microservices.external-services.admin-frontend.application-id") == headers.appId) {
+      if(ConfigFactory.load().getString("microservice.external-services.admin-frontend.application-id") == headers.appId) {
         f(request)
       } else {
         Forbidden

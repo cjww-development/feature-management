@@ -28,15 +28,9 @@ import play.api.mvc._
 import scala.util.{Failure, Success, Try}
 
 class DefaultFeatureController @Inject()(val controllerComponents: ControllerComponents,
+                                         val featureService: FeatureService,
                                          val config: ConfigurationLoader,
-                                         val featureService: FeatureService) extends FeatureController {
-
-  override val features: Features = getClass
-    .getClassLoader
-    .loadClass(config.get[String]("features.definition"))
-    .newInstance
-    .asInstanceOf[Features]
-
+                                         val features: Features) extends FeatureController {
   override val appId: String = config.getServiceId(config.get[String]("appName"))
 }
 
@@ -58,14 +52,14 @@ trait FeatureController extends BaseController with HttpHeaders {
     Try(state.toBoolean) match {
       case Success(bool) =>
         val setState = featureService.setState(featureName, bool)
-        if(state.toBoolean == setState) Ok(Json.obj(featureName -> state)) else InternalServerError
+        if(bool == setState) Ok(Json.obj(featureName -> state)) else InternalServerError
       case Failure(_) => BadRequest
     }
   }
 
   private def validateAdminCall(f: => Result): Action[AnyContent] = Action { implicit request =>
     constructHeaderPackageFromRequestHeaders.fold[Result](NotFound) { headers =>
-      if(ConfigFactory.load.getString("microservices.external-services.admin-frontend.application-id") == headers.appId) {
+      if(ConfigFactory.load.getString("microservice.external-services.admin-frontend.application-id") == headers.appId) {
         f
       } else {
         Forbidden
