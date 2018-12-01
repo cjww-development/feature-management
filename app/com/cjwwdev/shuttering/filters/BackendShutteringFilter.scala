@@ -17,20 +17,18 @@
 package com.cjwwdev.shuttering.filters
 
 import akka.stream.Materializer
-import com.cjwwdev.logging.Logging
+import com.cjwwdev.logging.output.Logger
 import com.cjwwdev.request.RequestBuilder
 import com.cjwwdev.responses.ApiResponse
 import javax.inject.Inject
-import play.api.http.HttpVerbs
-import play.api.mvc.{Filter, Request, RequestHeader, Result}
 import play.api.http.Status.SERVICE_UNAVAILABLE
 import play.api.libs.json.JsString
 import play.api.mvc.Results.ServiceUnavailable
+import play.api.mvc.{Filter, Request, RequestHeader, Result}
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
-class BackendShutteringFilter @Inject()(implicit val mat: Materializer) extends Filter with Logging with FilterConfig with ApiResponse {
+class BackendShutteringFilter @Inject()(implicit val mat: Materializer) extends Filter with Logger with FilterConfig with ApiResponse {
 
   override def apply(f: RequestHeader => Future[Result])(rh: RequestHeader): Future[Result] = {
     implicit val req: Request[String] = RequestBuilder.buildRequest[String](rh, "")
@@ -40,9 +38,9 @@ class BackendShutteringFilter @Inject()(implicit val mat: Materializer) extends 
     requestMethodMatches -> requestPathMatches match {
       case (true, true) => f(rh)
       case (_,_)        => if(shuttered) {
-        logger.warn("Service is shuttered")
+        LogAt.warn("Service is shuttered")
         withFutureJsonResponseBody(SERVICE_UNAVAILABLE, JsString("Service is unavailable, please try again later")) { json =>
-          Future(ServiceUnavailable(json))
+          Future.successful(ServiceUnavailable(json))
         }
       } else {
         f(rh)

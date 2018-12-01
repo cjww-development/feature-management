@@ -20,12 +20,10 @@ import com.cjwwdev.frontendUI.builders.NavBarLinkBuilder
 import com.cjwwdev.logging.Logging
 import com.cjwwdev.request.RequestBuilder
 import com.cjwwdev.views.html.templates.errors.MaintenanceView
-import play.api.http.HttpVerbs
 import play.api.i18n.{Lang, Langs, MessagesApi}
 import play.api.mvc.Results.ServiceUnavailable
 import play.api.mvc._
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait FrontendShutteringFilter extends Filter with Logging with FilterConfig {
@@ -45,7 +43,7 @@ trait FrontendShutteringFilter extends Filter with Logging with FilterConfig {
       case (true, true) => f(rh)
       case (_,_)        => if(shuttered) {
         logger.warn("Service is shuttered")
-        Future(ServiceUnavailable(MaintenanceView()))
+        Future.successful(ServiceUnavailable(MaintenanceView()))
       } else {
         f(rh)
       }
