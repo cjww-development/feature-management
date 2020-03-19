@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2020 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,10 @@
 package com.cjwwdev.featuremanagement.services
 
 import com.cjwwdev.featuremanagement.models.{Feature, Features}
-import com.cjwwdev.testing.unit.UnitTestSpec
+import org.scalatest.BeforeAndAfterAll
+import org.scalatestplus.play.PlaySpec
 
-class FeatureServiceSpec extends UnitTestSpec {
+class FeatureServiceSpec extends PlaySpec with BeforeAndAfterAll {
 
   val testService = new DefaultFeatureService
 
@@ -42,17 +43,17 @@ class FeatureServiceSpec extends UnitTestSpec {
   "getState" should {
     "return a feature with a true state" in {
       val result = testService.getState("testFeature1")
-      result mustBe Feature(feature = "testFeature1", state = true)
+      result mustBe Some(Feature(feature = "testFeature1", state = true))
     }
 
     "return a feature with a false state" in {
       val result = testService.getState("testFeature2")
-      result mustBe Feature(feature = "testFeature2", state = false)
+      result mustBe Some(Feature(feature = "testFeature2", state = false))
     }
 
-    "return a defaulted feature" in {
+    "return None when the feature doesn't exist" in {
       val result = testService.getState("testFeature3")
-      result mustBe Feature(feature = "testFeature3", state = false)
+      result mustBe None
     }
   }
 

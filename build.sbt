@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2020 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,45 +15,36 @@
  */
 
 import com.typesafe.config.ConfigFactory
-
-import scala.util.{Failure, Success, Try}
 import play.sbt.PlayImport.guice
-import scoverage.ScoverageKeys
+
+import scala.util.Try
 
 val appName = "feature-management"
 
-val btVersion: String = Try(ConfigFactory.load.getString("version")) match {
-  case Success(ver) => ver
-  case Failure(_)   => "0.1.0"
-}
+val btVersion: String = Try(ConfigFactory.load.getString("version")).getOrElse("0.1.0")
 
-lazy val scoverageSettings = Seq(
-  ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;models/.data/..*;com.cjwwdev.modules.*;com.cjwwdev.shuttering.filters.*;.*(AuthService|BuildInfo|Routes).*",
-  ScoverageKeys.coverageMinimum          := 80,
-  ScoverageKeys.coverageFailOnMinimum    := false,
-  ScoverageKeys.coverageHighlighting     := true
+lazy val mainDeps: Seq[ModuleID] = Seq(
+  guice
 )
 
-val dependencies: Seq[ModuleID] = Seq(
-  guice,
-  "com.typesafe.play" %  "play_2.12"         % "2.6.20",
-  "com.cjww-dev.libs" %  "http-verbs_2.12"   % "3.6.0",
-  "com.cjww-dev.libs" %  "frontend-ui_2.12"  % "2.8.2",
-  "com.cjww-dev.libs" %% "testing-framework" % "3.2.0"   % Test
+lazy val testDeps: Seq[ModuleID] = Seq(
+  "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test,
+  "org.mockito"            %  "mockito-core"       % "3.3.3" % Test
 )
+
+lazy val deps = mainDeps ++ testDeps
 
 lazy val library = Project(appName, file("."))
   .enablePlugins(PlayScala)
-  .settings(scoverageSettings)
   .settings(
     version                                       :=  btVersion,
-    scalaVersion                                  :=  "2.12.7",
+    scalaVersion                                  :=  "2.13.1",
     organization                                  :=  "com.cjww-dev.libs",
     resolvers                                     ++= Seq(
-      "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
-      "cjww-dev"            at "http://dl.bintray.com/cjww-development/releases"
+      "Typesafe repository" at "https://repo.typesafe.com/typesafe/releases/",
+      "cjww-dev"            at "https://dl.bintray.com/cjww-development/releases"
     ),
-    libraryDependencies                           ++= dependencies,
+    libraryDependencies                           ++= deps,
     bintrayOrganization                           :=  Some("cjww-development"),
     bintrayReleaseOnPublish    in ThisBuild       :=  true,
     bintrayRepository                             :=  "releases",

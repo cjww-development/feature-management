@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2020 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,13 @@ trait FeatureService {
 
   private val BASE_KEY = "features"
 
-  def getState(featureName: String): Feature = {
+  def getState(featureName: String): Option[Feature] = {
     Option(System.getProperty(s"$BASE_KEY.$featureName"))
-      .fold(Feature(featureName, state = false))(state => Feature(featureName, state = state.toBoolean))
+      .map(state => Feature(featureName, state = state.toBoolean))
   }
 
   def getAllStates(featureValue: Features): List[Feature] = {
-    featureValue.allFeatures map getState
+    featureValue.allFeatures.flatMap(getState)
   }
 
   def setState(featureName: String, state: Boolean): Boolean = {

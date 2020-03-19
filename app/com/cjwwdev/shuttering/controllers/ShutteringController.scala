@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2020 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,44 +16,29 @@
 
 package com.cjwwdev.shuttering.controllers
 
-import com.cjwwdev.config.ConfigurationLoader
-import com.cjwwdev.http.headers.HttpHeaders
-import com.cjwwdev.responses.ApiResponse
-import com.typesafe.config.ConfigFactory
-import javax.inject.Inject
-import play.api.libs.json.JsString
+import play.api.libs.json.{JsString, JsValue}
 import play.api.mvc._
 
-class DefaultShutteringController @Inject()(val controllerComponents: ControllerComponents,
-                                            val config: ConfigurationLoader) extends ShutteringController {
-  override val appId: String = config.getServiceId(config.get[String]("appName"))
-}
 
-trait ShutteringController extends BaseController with HttpHeaders with ApiResponse {
+trait ShutteringController extends BaseController {
 
-  def shutter(): Action[AnyContent] = validateAdminCall { implicit request =>
+  def validateAdminCall(f: => Result): Action[AnyContent]
+
+  def jsonResponse(status: Int, body: JsValue)(f: JsValue => Result): Result
+
+  def shutter(): Action[AnyContent] = validateAdminCall {
     System.setProperty("shuttered", "true")
     NoContent
   }
 
-  def unshutter(): Action[AnyContent] = validateAdminCall { implicit request =>
+  def unShutter(): Action[AnyContent] = validateAdminCall {
     System.setProperty("shuttered", "false")
     NoContent
   }
 
-  def getShutterState(): Action[AnyContent] = validateAdminCall { implicit request =>
-    withJsonResponseBody(OK, JsString(System.getProperty("shuttered", "false"))) { json =>
+  def getShutterState(): Action[AnyContent] = validateAdminCall {
+    jsonResponse(OK, JsString(System.getProperty("shuttered", "false"))) { json =>
       Ok(json)
-    }
-  }
-
-  private def validateAdminCall(f: Request[_] => Result): Action[AnyContent] = Action { implicit request =>
-    constructHeaderPackageFromRequestHeaders.fold[Result](NotFound) { headers =>
-      if(ConfigFactory.load().getString("microservice.external-services.admin-frontend.application-id") == headers.appId) {
-        f(request)
-      } else {
-        Forbidden
-      }
     }
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 CJWW Development
+ * Copyright 2020 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,12 @@
 
 package com.cjwwdev.modules
 
-import com.cjwwdev.featuremanagement.controllers.{DefaultFeatureController, FeatureController}
 import com.cjwwdev.featuremanagement.services.{DefaultFeatureService, FeatureService}
-import play.api.{Configuration, Environment}
 import play.api.inject.{Binding, Module}
+import play.api.{Configuration, Environment}
 
 class FeatureBindings extends Module {
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = Seq(
-    bind(classOf[FeatureService]).to(classOf[DefaultFeatureService]).eagerly(),
-    bind(classOf[FeatureController]).to(classOf[DefaultFeatureController]).eagerly()
+    bind[FeatureService].to[DefaultFeatureService].eagerly()
   )
 }
