@@ -29,11 +29,11 @@ trait FeatureController extends BaseController {
 
   val featureService: FeatureService
 
-  def validateAdminCall(f: => Result): Action[AnyContent]
+  def validateAdminCall(f: RequestHeader => Result): Action[AnyContent]
 
-  def jsonResponse(status: Int, body: JsValue)(f: JsValue => Result): Result
+  def jsonResponse(status: Int, body: JsValue)(f: JsValue => Result)(implicit rh: RequestHeader): Result
 
-  def getState(featureName: String): Action[AnyContent] = validateAdminCall {
+  def getState(featureName: String): Action[AnyContent] = validateAdminCall { implicit req =>
     featureService.getState(featureName).fold(NoContent) { feat =>
       jsonResponse(OK, Json.toJson(feat)) { json =>
         Ok(json)
@@ -41,14 +41,14 @@ trait FeatureController extends BaseController {
     }
   }
 
-  def getAllStates(): Action[AnyContent] = validateAdminCall {
+  def getAllStates(): Action[AnyContent] = validateAdminCall { implicit req =>
     featureService.getAllStates(features) match {
       case x@_::_ => jsonResponse(OK, Json.toJson(x))(json => Ok(json))
       case Nil    => NoContent
     }
   }
 
-  def setState(featureName: String, state: String): Action[AnyContent] = validateAdminCall {
+  def setState(featureName: String, state: String): Action[AnyContent] = validateAdminCall { implicit req =>
     Try(state.toBoolean) match {
       case Success(bool) =>
         val setState = featureService.setState(featureName, bool)

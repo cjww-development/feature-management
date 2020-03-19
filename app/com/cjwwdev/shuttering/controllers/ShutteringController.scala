@@ -22,21 +22,21 @@ import play.api.mvc._
 
 trait ShutteringController extends BaseController {
 
-  def validateAdminCall(f: => Result): Action[AnyContent]
+  def validateAdminCall(f: RequestHeader => Result): Action[AnyContent]
 
-  def jsonResponse(status: Int, body: JsValue)(f: JsValue => Result): Result
+  def jsonResponse(status: Int, body: JsValue)(f: JsValue => Result)(implicit rh: RequestHeader): Result
 
-  def shutter(): Action[AnyContent] = validateAdminCall {
+  def shutter(): Action[AnyContent] = validateAdminCall { _ =>
     System.setProperty("shuttered", "true")
     NoContent
   }
 
-  def unShutter(): Action[AnyContent] = validateAdminCall {
+  def unShutter(): Action[AnyContent] = validateAdminCall { _ =>
     System.setProperty("shuttered", "false")
     NoContent
   }
 
-  def getShutterState(): Action[AnyContent] = validateAdminCall {
+  def getShutterState(): Action[AnyContent] = validateAdminCall { implicit req =>
     jsonResponse(OK, JsString(System.getProperty("shuttered", "false"))) { json =>
       Ok(json)
     }

@@ -31,14 +31,14 @@ class ShutteringControllerSpec extends PlaySpec {
   val testController: ShutteringController = new ShutteringController {
     private val adminAppId = uuid
     override protected def controllerComponents: ControllerComponents = stubControllerComponents()
-    override def validateAdminCall(f: => Result): Action[AnyContent] = Action { implicit req =>
+    override def validateAdminCall(f: RequestHeader => Result): Action[AnyContent] = Action { implicit req =>
       req.headers.get("X-App-Id").fold(NotFound("")) {
-        case `adminAppId` => f
+        case `adminAppId` => f(req)
         case _ => Forbidden("")
       }
     }
 
-    override def jsonResponse(status: Int, body: JsValue)(f: JsValue => Result): Result = {
+    override def jsonResponse(status: Int, body: JsValue)(f: JsValue => Result)(implicit rh: RequestHeader): Result = {
       val json = Json.parse(
         s"""{
           | "status" : $status,

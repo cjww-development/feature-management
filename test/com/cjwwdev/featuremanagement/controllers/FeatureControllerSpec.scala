@@ -25,7 +25,7 @@ import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{Action, AnyContent, ControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, ControllerComponents, RequestHeader, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
@@ -52,14 +52,14 @@ class FeatureControllerSpec extends PlaySpec with MockitoSugar {
 
     val adminAppId = uuid
 
-    override def validateAdminCall(f: => Result): Action[AnyContent] = Action { implicit req =>
+    override def validateAdminCall(f: RequestHeader => Result): Action[AnyContent] = Action { implicit req =>
       req.headers.get("X-App-Id").fold(NotFound("")) {
-        case `adminAppId` => f
+        case `adminAppId` => f(req)
         case _ => Forbidden("")
       }
     }
 
-    override def jsonResponse(status: Int, body: JsValue)(f: JsValue => Result): Result = {
+    override def jsonResponse(status: Int, body: JsValue)(f: JsValue => Result)(implicit rh: RequestHeader): Result = {
       val json = Json.parse(
         s"""{
            | "status" : $status,
