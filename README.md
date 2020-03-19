@@ -8,7 +8,7 @@ End points to set and get feature states
 
 To utilise this library add this to your sbt build file
 ```sbtshell
-"com.cjww-dev.libs" % "feature-management_2.12" % "0.1.0"
+"com.cjww-dev.libs" % "feature-management_2.13" % "x.x.x"
 ```
 
 Then add this to your application.conf 
@@ -16,6 +16,8 @@ Then add this to your application.conf
 ```hocon
 play.modules.enabled += "com.cjwwdev.modules.FeatureBindings"
 ``` 
+
+users need to implement FeatureController
 
 and finally, to be able to hit the routes add ```features.routes``` to your routes file
 
@@ -75,7 +77,7 @@ Json response body:
 Shuttering
 ==========
 
-To be able to hit the shuttering routes add ```shuttering.routes``` to your routes file
+To be able to hit the shuttering routes add ```shuttering.routes``` to your routes file and users need to implement shuttering controller
 
 ### POST /service-shuttering/true
 
