@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.cjwwdev.featuremanagement.services
+package dev.cjww.featuremanagement.services
 
-import com.cjwwdev.featuremanagement.models.{Feature, Features}
+import dev.cjww.featuremanagement.models.{Feature, Features}
+
 import javax.inject.Inject
 
 class DefaultFeatureService @Inject()() extends FeatureService

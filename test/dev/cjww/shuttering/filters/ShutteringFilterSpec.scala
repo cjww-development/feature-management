@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.cjwwdev.shuttering.filters
+package dev.cjww.shuttering.filters
 
 import java.net.URI
 

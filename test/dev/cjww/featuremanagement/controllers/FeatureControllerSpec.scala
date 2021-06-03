@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package com.cjwwdev.featuremanagement.controllers
+package dev.cjww.featuremanagement.controllers
 
 import java.util.UUID
-
-import com.cjwwdev.featuremanagement.models.{Feature, Features}
-import com.cjwwdev.featuremanagement.services.FeatureService
+import dev.cjww.featuremanagement.models.{Feature, Features}
+import dev.cjww.featuremanagement.services.FeatureService
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar

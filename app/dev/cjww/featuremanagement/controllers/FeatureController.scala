@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.cjwwdev.featuremanagement.controllers
+package dev.cjww.featuremanagement.controllers
 
-import com.cjwwdev.featuremanagement.models.Features
-import com.cjwwdev.featuremanagement.services.FeatureService
+import dev.cjww.featuremanagement.models.Features
+import dev.cjww.featuremanagement.services.FeatureService
 import play.api.libs.json.{JsString, JsValue, Json}
 import play.api.mvc._
 

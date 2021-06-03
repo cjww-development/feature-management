@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.cjwwdev.shuttering.filters
+package dev.cjww.shuttering.filters
 
 import org.slf4j.{Logger, LoggerFactory}
 import play.api.http.Status.SERVICE_UNAVAILABLE

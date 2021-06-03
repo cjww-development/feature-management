@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.cjwwdev.shuttering.controllers
+package dev.cjww.shuttering.controllers
 
 import play.api.libs.json.{JsString, JsValue}
 import play.api.mvc._

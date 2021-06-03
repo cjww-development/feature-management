@@ -1,5 +1,4 @@
 [![Apache-2.0 license](http://img.shields.io/badge/license-Apache-brightgreen.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
-[![Download](https://api.bintray.com/packages/cjww-development/releases/feature-management/images/download.svg) ](https://bintray.com/cjww-development/releases/feature-management/_latestVersion)
 
 feature-management
 ==================
@@ -8,13 +7,13 @@ End points to set and get feature states
 
 To utilise this library add this to your sbt build file
 ```sbtshell
-"com.cjww-dev.libs" % "feature-management_2.13" % "x.x.x"
+"dev.cjww.libs" % "feature-management_2.13" % "x.x.x"
 ```
 
 Then add this to your application.conf 
 
 ```hocon
-play.modules.enabled += "com.cjwwdev.modules.FeatureBindings"
+play.modules.enabled += "dev.cjww.modules.FeatureBindings"
 ``` 
 
 users need to implement FeatureController

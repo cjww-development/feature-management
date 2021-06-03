@@ -1,5 +1,5 @@
 #Feature management endpoints
 
-GET     /feature/:feature/state             com.cjwwdev.featuremanagement.controllers.FeatureController.getState(feature)
-GET     /features                           com.cjwwdev.featuremanagement.controllers.FeatureController.getAllStates()
-POST    /feature/:feature/state/:state      com.cjwwdev.featuremanagement.controllers.FeatureController.setState(feature, state)
+GET     /feature/:feature/state             dev.cjww.featuremanagement.controllers.FeatureController.getState(feature)
+GET     /features                           dev.cjww.featuremanagement.controllers.FeatureController.getAllStates()
+POST    /feature/:feature/state/:state      dev.cjww.featuremanagement.controllers.FeatureController.setState(feature, state)

@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package com.cjwwdev.featuremanagement.models
+package dev.cjww.modules
 
-import play.api.libs.json.{Format, Json}
+import dev.cjww.featuremanagement.services.{DefaultFeatureService, FeatureService}
+import play.api.inject.{Binding, Module}
+import play.api.{Configuration, Environment}
 
-case class Feature(feature: String, state: Boolean)
-
-object Feature {
-  implicit val format: Format[Feature] = Json.format[Feature]
+class FeatureBindings extends Module {
+  override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = Seq(
+    bind[FeatureService].to[DefaultFeatureService].eagerly()
+  )
 }

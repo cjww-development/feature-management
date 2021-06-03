@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.cjwwdev.featuremanagement.models
+package dev.cjww.featuremanagement.models
 
 trait Features {
   val allFeatures: List[String]

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.cjwwdev.shuttering.controllers
+package dev.cjww.shuttering.controllers
 
 import java.util.UUID
 
