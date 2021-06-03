@@ -36,23 +36,23 @@ import scala.concurrent.Future
 
 class ShutteringFilterSpec extends PlaySpec with GuiceOneAppPerSuite with FutureAwaits with DefaultAwaitTimeout {
 
-  val materializer = app.injector.instanceOf[Materializer]
+  val materializer: Materializer = app.injector.instanceOf[Materializer]
 
-  val testBackendShutteringfilter = new ShutteringFilter[JsValue] {
+  val testBackendShutteringfilter: ShutteringFilter[JsValue] = new ShutteringFilter[JsValue] {
     override def shutterResponse(statusCode: Int)(implicit rh: RequestHeader): JsValue = Json.parse(s"""{ "status" : ${statusCode} }""")
     override implicit val writer: Writeable[JsValue] = Writeable.writeableOf_JsValue
     override val appName: String = "test-backend-service"
     override implicit def mat: Materializer = materializer
   }
 
-  val testFrontendShutteringFilter = new ShutteringFilter[Html] {
+  val testFrontendShutteringFilter: ShutteringFilter[Html] = new ShutteringFilter[Html] {
     override def shutterResponse(statusCode: Int)(implicit rh: RequestHeader): Html = Html(s"<p>Status: ${statusCode}</p>")
     override implicit val writer: Writeable[Html] = Writeable(html => ByteString(html.body), contentType = Some("text/html"))
     override val appName: String = "test-frontend-service"
     override implicit def mat: Materializer = materializer
   }
 
-  val okFunction: RequestHeader => Future[Result] = rh => Future.successful(Ok("request allowed through"))
+  val okFunction: RequestHeader => Future[Result] = _ => Future.successful(Ok("request allowed through"))
 
   def requestHeader(verb: String, route: String): RequestHeader = new RequestHeader {
     override def connection: RemoteConnection = ???

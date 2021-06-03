@@ -24,7 +24,7 @@ import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{Action, AnyContent, ControllerComponents, RequestHeader, Result}
+import play.api.mvc.{Action, AnyContent, AnyContentAsEmpty, ControllerComponents, RequestHeader, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
@@ -44,12 +44,12 @@ class FeatureControllerSpec extends PlaySpec with MockitoSugar {
     )
   }
 
-  val testController = new FeatureController {
+  val testController: FeatureController = new FeatureController {
     override val features: Features                                   = TestFeatures
     override val featureService: FeatureService                       = mockFeatureService
     override protected def controllerComponents: ControllerComponents = stubControllerComponents()
 
-    val adminAppId = uuid
+    val adminAppId: String = uuid
 
     override def validateAdminCall(f: RequestHeader => Result): Action[AnyContent] = Action { implicit req =>
       req.headers.get("X-App-Id").fold(NotFound("")) {
@@ -69,7 +69,7 @@ class FeatureControllerSpec extends PlaySpec with MockitoSugar {
     }
   }
 
-  lazy val request = FakeRequest()
+  lazy val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
     .withHeaders("X-App-Id" -> uuid)
 
   "getState" should {
